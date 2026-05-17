@@ -62,9 +62,9 @@ Rules are organized by the four model risk dimensions from SR 11-7.
 
 | ID | Name | Severity | Description |
 |---|---|---|---|
+| CS001 | `LOOKAHEAD_SHIFT_NEGATIVE` | critical | A `.shift()` call with a negative integer argument reads future observations into the current index, introducing look-ahead bias into any signal or feature derived from it. |
+| CS002 | `SAME_PERIOD_SIGNAL_EXECUTION` | high | A signal and a return are combined in the same period without an intervening `shift(1)`, implying the signal was generated and executed on the same bar — which is not achievable in practice. |
 | CS003 | `SCALER_FIT_FULL_DATASET` | high | A sklearn-compatible scaler or transformer is fitted on the full dataset before the train/test split, leaking test-set statistics into the preprocessing step. |
-
-Rules CS001 (`LOOKAHEAD_SHIFT_NEGATIVE`) and CS002 (`SAME_PERIOD_SIGNAL_EXECUTION`) are planned for v0.2.
 
 ### Outcomes Analysis, Robustness Testing, Process Verification
 
@@ -113,7 +113,7 @@ Probus is not a replacement for institutional model validation. ...
 
 ```bash
 # Clone and install with dev dependencies
-git clone https://github.com/henriqfrota/probus
+git clone https://github.com/henriquefrota/probus
 cd probus
 uv sync --extra dev
 
