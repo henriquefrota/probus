@@ -1,5 +1,7 @@
 # Probus
 
+[![Tests](https://img.shields.io/badge/tests-54%20passing-brightgreen)](https://github.com/henriquefrota/probus/tree/main/tests) [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/) [![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/henriquefrota/probus/blob/main/LICENSE) [![Release](https://img.shields.io/badge/release-v0.1.0-orange)](https://github.com/henriquefrota/probus/releases/tag/v0.1.0)
+
 **Probus is an open-source toolkit for model risk checks in Python-based quantitative research.**
 
 > Probus is not a replacement for institutional model validation. It is an open-source toolkit that brings selected model risk checks into Python-based quantitative research workflows.
@@ -8,15 +10,71 @@ Built by [Henrique Frota](https://github.com/henriquefrota), Economics @ PUC-Rio
 
 ---
 
+## Why this matters
+
+Look-ahead bias, data leakage, and same-period execution are among the most common methodological errors in quantitative research. They are especially insidious because they don't cause crashes or visible bugs — they silently inflate Sharpe ratios, hit rates, and out-of-sample metrics. A strategy that looks promising in a backtest may be entirely an artifact of one of these errors.
+
+Probus codifies the most common of these errors as static analysis rules so they can be caught at the code-review stage, before they reach a model evaluation report.
+
+---
+
+## Quick example
+
+Consider this snippet — a momentum strategy that looks profitable in backtest:
+
+```python
+import pandas as pd
+
+prices = pd.read_csv("prices.csv", parse_dates=["date"], index_col="date")
+
+# Momentum signal
+signal = prices["close"].rolling(20).mean().shift(-1)   # ← bug
+
+# Compute strategy returns
+returns = prices["close"].pct_change()
+strategy = signal * returns
+
+print(f"Sharpe: {strategy.mean() / strategy.std() * 252**0.5:.2f}")
+```
+
+Running Probus on this file:
+
+```
+$ python -m probus.cli audit backtest.py
+
+# Probus Model Risk Report
+
+**Source:** `backtest.py`
+
+## Overall Score
+70/100 — Moderate Risk
+
+## Findings
+
+### [CRITICAL] CS001
+**File:** `backtest.py` — Line 6
+
+shift(-1) at line 6 shifts data backward by 1 period(s), reading future
+observations into the current index position. Any signal or feature
+derived from this call has look-ahead bias.
+
+**Recommendation:** Remove the negative shift from signal and feature
+construction. If you need an execution lag, use shift(1) on the signal
+side. If this shift(-N) is creating a supervised learning target
+(forward return), assign the result to a variable named 'target', 'y',
+'fwd_return', or similar — those assignments are excluded from this check.
+
+**Reference:** SR 11-7 §Conceptual Soundness; López de Prado (2018)
+Advances in Financial Machine Learning, Ch. 7
+```
+
+The `shift(-1)` on the signal pulls tomorrow's moving average into today's row — the strategy is using future information to make present decisions. Without Probus, this bug typically surfaces only when the strategy fails in live trading.
+
+---
+
 ## What it does
 
-Backtests and quantitative models routinely suffer from methodological errors that inflate results and generate false confidence: look-ahead bias, data leakage, missing transaction costs, and weak validation patterns. Probus automates static checks for a curated set of these errors, organized around the model risk dimensions described in Federal Reserve SR 11-7 and BCB Resolução 4557.
-
-**Probus is not:**
-- A trading tool or signal generator
-- A complete model governance framework
-- A compliance tool for SR 11-7 or BCB 4557
-- A replacement for institutional model validation departments
+Probus organizes its rules around the four model risk dimensions described in Federal Reserve SR 11-7 and BCB Resolução 4557: Conceptual Soundness, Outcomes Analysis, Robustness Testing, and Process Verification. Each rule maps to one of these dimensions and includes its rationale, fix, and academic or regulatory reference.
 
 **Probus is:**
 - A static analysis toolkit for quantitative research code (`.py` files)
@@ -68,13 +126,25 @@ Rules are organized by the four model risk dimensions from SR 11-7.
 
 | ID | Name | Severity | Description |
 |---|---|---|---|
-| CS001 | `LOOKAHEAD_SHIFT_NEGATIVE` | critical | A `.shift()` call with a negative integer argument reads future observations into the current index, introducing look-ahead bias into any signal or feature derived from it. |
-| CS002 | `SAME_PERIOD_SIGNAL_EXECUTION` | high | A signal and a return are combined in the same period without an intervening `shift(1)`, implying the signal was generated and executed on the same bar — which is not achievable in practice. |
-| CS003 | `SCALER_FIT_FULL_DATASET` | high | A sklearn-compatible scaler or transformer is fitted on the full dataset before the train/test split, leaking test-set statistics into the preprocessing step. |
+| CS001 | `LOOKAHEAD_SHIFT_NEGATIVE` | critical | Detects `.shift(N)` calls with a negative integer argument, which read future observations into the current row. Any signal or feature derived from such a call has look-ahead bias and will produce inflated backtest results that cannot be replicated in live trading. |
+| CS002 | `SAME_PERIOD_SIGNAL_EXECUTION` | high | Detects signals combined arithmetically with returns of the same period, with no intervening `shift(1)`. This implies the signal was both generated and executed within the same bar — impossible in practice, since a signal computed from a bar's close cannot be acted upon until the next bar opens. |
+| CS003 | `SCALER_FIT_FULL_DATASET` | high | Detects sklearn-compatible scalers or transformers fitted on the full dataset before the train/test split is performed. This leaks statistics (mean, variance, quantiles) from the test partition into the preprocessing step, invalidating any out-of-sample evaluation. |
 
 ### Outcomes Analysis, Robustness Testing, Process Verification
 
 Rules for these dimensions (`OA001`, `RT001`, `PV001`) are planned for v0.2.
+
+---
+
+## Roadmap
+
+- **v0.1** (current) — Conceptual Soundness rules: CS001, CS002, CS003
+- **v0.2** — Outcomes Analysis (transaction costs), Robustness Testing (random split on time series), Process Verification (random seed enforcement)
+- **v0.3** — Notebook (.ipynb) support, public benchmark with measured false positive rate, MkDocs documentation site
+- **v1.0** — Consolidated rule set (~8 rules), bilingual documentation (EN/PT)
+- **Post-v1.0** — Experimental statistics module (Deflated Sharpe Ratio, Probability of Backtest Overfitting, CSCV) as opt-in extension
+
+Roadmap is indicative, not contractual. Priorities shift based on discovery conversations with practitioners.
 
 ---
 
