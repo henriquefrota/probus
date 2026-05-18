@@ -7,7 +7,13 @@ app = typer.Typer(
     name="probus",
     help="Probus — model risk checks for quantitative research.",
     add_completion=False,
+    no_args_is_help=True,
 )
+
+
+@app.callback()
+def _root() -> None:
+    """Probus — model risk checks for quantitative research."""
 
 
 @app.command()
@@ -28,3 +34,7 @@ def audit(
 
     if findings:
         raise typer.Exit(code=1)
+
+
+if __name__ == "__main__":
+    app()

@@ -4,6 +4,8 @@
 
 > Probus is not a replacement for institutional model validation. It is an open-source toolkit that brings selected model risk checks into Python-based quantitative research workflows.
 
+Built by [Henrique Frota](https://github.com/henriquefrota), Economics @ PUC-Rio. Part of ongoing work on model risk practices for quantitative research.
+
 ---
 
 ## What it does
@@ -25,17 +27,21 @@ Backtests and quantitative models routinely suffer from methodological errors th
 
 ## Installation
 
-Requires Python 3.11+.
+Requires Python 3.11+. Probus is not yet published to PyPI — install from source:
 
 ```bash
-pip install probus
+git clone https://github.com/henriquefrota/probus.git
+cd probus
+pip install -e .
 ```
 
 Using [uv](https://github.com/astral-sh/uv):
 
 ```bash
-uv add probus
+uv sync
 ```
+
+> **Note:** After `pip install -e .`, the `probus` entry-point script is placed in your Python environment's `Scripts/` directory. If that directory is not on your `PATH`, use `python -m probus.cli` as a drop-in replacement for all commands below.
 
 ---
 
@@ -43,13 +49,13 @@ uv add probus
 
 ```bash
 # Audit a single file
-probus audit path/to/backtest.py
+python -m probus.cli audit path/to/backtest.py
 
 # Audit a directory (recursive)
-probus audit src/models/
+python -m probus.cli audit src/models/
 
 # JSON output for CI integration
-probus audit path/to/backtest.py --format json
+python -m probus.cli audit path/to/backtest.py --format json
 ```
 
 ---
@@ -69,33 +75,6 @@ Rules are organized by the four model risk dimensions from SR 11-7.
 ### Outcomes Analysis, Robustness Testing, Process Verification
 
 Rules for these dimensions (`OA001`, `RT001`, `PV001`) are planned for v0.2.
-
----
-
-## Report structure
-
-```
-# Probus Model Risk Report
-
-## Overall Score
-80/100 — Low Risk
-
-## Category Scores
-- Conceptual Soundness: 80/100
-- Outcomes Analysis: 100/100
-- Robustness Testing: 100/100
-- Process Verification: 100/100
-
-## Findings
-
-### [HIGH] CS003
-File: `backtest.py` — Line 47
-'scaler' is fitted on the full dataset at line 47, before the train/test
-split detected at line 52. ...
-
-## Limitations
-Probus is not a replacement for institutional model validation. ...
-```
 
 ---
 
