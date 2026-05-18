@@ -1,3 +1,12 @@
+import sys
+
+if sys.stdout.encoding.lower() != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError):
+        pass
+
 import typer
 
 from probus.report import to_json, to_markdown
