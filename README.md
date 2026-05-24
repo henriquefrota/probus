@@ -1,6 +1,6 @@
 # Probus
 
-[![Tests](https://img.shields.io/badge/tests-54%20passing-brightgreen)](https://github.com/henriquefrota/probus/tree/main/tests) [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/) [![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/henriquefrota/probus/blob/main/LICENSE) [![Release](https://img.shields.io/badge/release-v0.1.0-orange)](https://github.com/henriquefrota/probus/releases/tag/v0.1.0)
+[![Tests](https://img.shields.io/badge/tests-112%20passing-brightgreen)](https://github.com/henriquefrota/probus/tree/main/tests) [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/) [![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/henriquefrota/probus/blob/main/LICENSE) [![Release](https://img.shields.io/badge/release-v0.2.0-orange)](https://github.com/henriquefrota/probus/releases/tag/v0.2.0)
 
 **Probus is an open-source toolkit for model risk checks in Python-based quantitative research.**
 
@@ -118,7 +118,7 @@ python -m probus.cli audit path/to/backtest.py --format json
 
 ---
 
-## Rules (v0.1)
+## Rules (v0.2)
 
 Rules are organized by the four model risk dimensions from SR 11-7.
 
@@ -130,16 +130,30 @@ Rules are organized by the four model risk dimensions from SR 11-7.
 | CS002 | `SAME_PERIOD_SIGNAL_EXECUTION` | high | Detects signals combined arithmetically with returns of the same period, with no intervening `shift(1)`. This implies the signal was both generated and executed within the same bar — impossible in practice, since a signal computed from a bar's close cannot be acted upon until the next bar opens. |
 | CS003 | `SCALER_FIT_FULL_DATASET` | high | Detects sklearn-compatible scalers or transformers fitted on the full dataset before the train/test split is performed. This leaks statistics (mean, variance, quantiles) from the test partition into the preprocessing step, invalidating any out-of-sample evaluation. |
 
-### Outcomes Analysis, Robustness Testing, Process Verification
+### Outcomes Analysis — *Are model outputs evaluated against realistic assumptions?*
 
-Rules for these dimensions (`OA001`, `RT001`, `PV001`) are planned for v0.2.
+| ID | Name | Severity | Description |
+|---|---|---|---|
+| OA001 | `NO_TRANSACTION_COSTS` | medium | Detects complete backtests that calculate strategy returns and evaluate performance with no mention of transaction costs anywhere in the file. Inflated Sharpe ratios and cumulative returns are a typical consequence. (File-level check.) |
+
+### Robustness Testing — *Does the model hold under realistic conditions?*
+
+| ID | Name | Severity | Description |
+|---|---|---|---|
+| RT001 | `RANDOM_SPLIT_TIME_SERIES` | medium | Detects `train_test_split` called with `shuffle=True` (or without `shuffle=False`) in files with clear temporal/time-series context. Random splitting of time-ordered data leaks future observations into the training set. |
+
+### Process Verification — *Is the process reproducible and auditable?*
+
+| ID | Name | Severity | Description |
+|---|---|---|---|
+| PV001 | `MISSING_RANDOM_SEED` | medium | Detects use of random number generators (numpy, stdlib random, torch, sklearn) without a fixed seed or `random_state`, breaking reproducibility of results. |
 
 ---
 
 ## Roadmap
 
-- **v0.1** (current) — Conceptual Soundness rules: CS001, CS002, CS003
-- **v0.2** — Outcomes Analysis (transaction costs), Robustness Testing (random split on time series), Process Verification (random seed enforcement)
+- **v0.1** ✓ complete — Conceptual Soundness rules: CS001, CS002, CS003
+- **v0.2** ✓ complete — Outcomes Analysis (OA001), Robustness Testing (RT001), Process Verification (PV001)
 - **v0.3** — Notebook (.ipynb) support, public benchmark with measured false positive rate, MkDocs documentation site
 - **v1.0** — Consolidated rule set (~8 rules), bilingual documentation (EN/PT)
 - **Post-v1.0** — Experimental statistics module (Deflated Sharpe Ratio, Probability of Backtest Overfitting, CSCV) as opt-in extension
