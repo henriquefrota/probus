@@ -62,6 +62,7 @@ REFERENCES
 
 import ast
 
+from probus.rules._utils import is_test_filepath
 from probus.rules.base import Finding, Rule
 
 _STRATEGY_VAR_NAMES: frozenset[str] = frozenset({
@@ -86,15 +87,6 @@ _COST_TERMS: frozenset[str] = frozenset({
     "transaction",
     "rebate",
 })
-
-
-def _is_test_filepath(filepath: str) -> bool:
-    normalized = filepath.replace("\\", "/")
-    return (
-        "/tests/" in normalized
-        or "/test_" in normalized
-        or normalized.startswith("test_")
-    )
 
 
 def _has_strategy_returns(tree: ast.AST) -> bool:
@@ -179,7 +171,7 @@ class OA001NoTransactionCosts(Rule):
     severity = "medium"
 
     def check(self, source: str, filepath: str) -> list[Finding]:
-        if _is_test_filepath(filepath):
+        if is_test_filepath(filepath):
             return []
 
         try:

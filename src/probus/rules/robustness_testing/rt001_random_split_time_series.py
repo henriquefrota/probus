@@ -56,6 +56,7 @@ REFERENCES
 import ast
 from typing import Optional
 
+from probus.rules._utils import is_test_filepath
 from probus.rules.base import Finding, Rule
 
 _TEMPORAL_SIGNALS: frozenset[str] = frozenset({
@@ -67,15 +68,6 @@ _TEMPORAL_SIGNALS: frozenset[str] = frozenset({
     "resample",
     "TimeSeriesSplit",
 })
-
-
-def _is_test_filepath(filepath: str) -> bool:
-    normalized = filepath.replace("\\", "/")
-    return (
-        "/tests/" in normalized
-        or "/test_" in normalized
-        or normalized.startswith("test_")
-    )
 
 
 def _find_train_test_split_calls(tree: ast.AST) -> list[ast.Call]:
@@ -151,7 +143,7 @@ class RT001RandomSplitTimeSeries(Rule):
     severity = "medium"
 
     def check(self, source: str, filepath: str) -> list[Finding]:
-        if _is_test_filepath(filepath):
+        if is_test_filepath(filepath):
             return []
 
         try:

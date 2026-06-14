@@ -61,6 +61,7 @@ REFERENCES
 
 import ast
 
+from probus.rules._utils import is_test_filepath
 from probus.rules.base import Finding, Rule
 
 _NUMPY_RNG_METHODS: frozenset[str] = frozenset({
@@ -201,15 +202,6 @@ def _is_seed_call(node: ast.Call) -> bool:
     )
 
 
-def _is_test_filepath(filepath: str) -> bool:
-    normalized = filepath.replace("\\", "/")
-    return (
-        "/tests/" in normalized
-        or "/test_" in normalized
-        or normalized.startswith("test_")
-    )
-
-
 class PV001MissingRandomSeed(Rule):
     """
     PV001 — MISSING_RANDOM_SEED
@@ -233,7 +225,7 @@ class PV001MissingRandomSeed(Rule):
     severity = "medium"
 
     def check(self, source: str, filepath: str) -> list[Finding]:
-        if _is_test_filepath(filepath):
+        if is_test_filepath(filepath):
             return []
 
         try:
