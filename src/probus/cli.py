@@ -9,6 +9,7 @@ if sys.stdout.encoding.lower() != "utf-8":
 
 import typer
 
+from probus import __version__
 from probus.report import to_json, to_markdown
 from probus.runner import Runner
 
@@ -20,8 +21,22 @@ app = typer.Typer(
 )
 
 
+def _version_callback(value: bool) -> None:
+    if value:
+        typer.echo(f"probus {__version__}")
+        raise typer.Exit()
+
+
 @app.callback()
-def _root() -> None:
+def _root(
+    version: bool = typer.Option(
+        False,
+        "--version",
+        help="Show the Probus version and exit.",
+        callback=_version_callback,
+        is_eager=True,
+    ),
+) -> None:
     """Probus — model risk checks for quantitative research."""
 
 
