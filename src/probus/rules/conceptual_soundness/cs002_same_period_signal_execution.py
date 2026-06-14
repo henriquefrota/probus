@@ -45,6 +45,7 @@ KNOWN LIMITATIONS
   only. The inner pair is not directly checked.
 - .multiply() method calls are not yet detected (only * operator).
 - Cross-function analysis is not performed.
+- Test files are excluded.
 
 REFERENCES
 ----------
@@ -55,6 +56,7 @@ REFERENCES
 
 import ast
 
+from probus.rules._utils import is_test_filepath
 from probus.rules.base import Finding, Rule
 
 # pandas methods that produce period-over-period returns.
@@ -151,6 +153,9 @@ class CS002SamePeriodSignalExecution(Rule):
     severity = "high"
 
     def check(self, source: str, filepath: str) -> list[Finding]:
+        if is_test_filepath(filepath):
+            return []
+
         try:
             tree = ast.parse(source)
         except SyntaxError:

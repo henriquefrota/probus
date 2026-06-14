@@ -47,6 +47,7 @@ KNOWN LIMITATIONS
 - The rule checks source-code line ordering as a proxy for execution order.
   This approximation is valid for linear scripts and single-function bodies,
   which cover the majority of backtest code in practice.
+- Test files are excluded.
 
 REFERENCES
 ----------
@@ -60,6 +61,7 @@ REFERENCES
 import ast
 from typing import Optional
 
+from probus.rules._utils import is_test_filepath
 from probus.rules.base import Finding, Rule
 
 # Sklearn-compatible transformers that must only be fitted on training data
@@ -217,6 +219,9 @@ class CS003ScalerFitFullDataset(Rule):
     severity = "high"
 
     def check(self, source: str, filepath: str) -> list[Finding]:
+        if is_test_filepath(filepath):
+            return []
+
         try:
             tree = ast.parse(source)
         except SyntaxError:

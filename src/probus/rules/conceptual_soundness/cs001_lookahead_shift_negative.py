@@ -45,6 +45,7 @@ KNOWN LIMITATIONS
 - Cross-function and cross-cell tracking is not performed.
 - A label-like variable that also feeds a signal pipeline would be excluded
   from this check despite being problematic.
+- Test files are excluded.
 
 REFERENCES
 ----------
@@ -56,6 +57,7 @@ REFERENCES
 import ast
 from typing import Optional
 
+from probus.rules._utils import is_test_filepath
 from probus.rules.base import Finding, Rule
 
 # Variable names that indicate the assignment is a supervised learning label,
@@ -183,6 +185,9 @@ class CS001LookaheadShiftNegative(Rule):
     severity = "critical"
 
     def check(self, source: str, filepath: str) -> list[Finding]:
+        if is_test_filepath(filepath):
+            return []
+
         try:
             tree = ast.parse(source)
         except SyntaxError:
