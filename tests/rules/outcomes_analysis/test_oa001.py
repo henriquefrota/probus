@@ -101,8 +101,7 @@ class TestOA001EdgeCases:
     def test_no_performance_eval_no_finding(self, rule):
         # Has strategy_returns but no Sharpe/annualization
         source = (
-            "strategy_returns = signal * returns\n"
-            "print(strategy_returns.sum())\n"
+            "strategy_returns = signal * returns\n" "print(strategy_returns.sum())\n"
         )
         assert rule.check(source, "partial.py") == []
 

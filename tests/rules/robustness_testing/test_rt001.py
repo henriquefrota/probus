@@ -40,9 +40,9 @@ class TestRT001BadFixture:
         findings = rule.check(_load("rt001_bad.py"), "rt001_bad.py")
         source_lines = _load("rt001_bad.py").splitlines()
         flagged = source_lines[findings[0].line - 1]
-        assert "train_test_split" in flagged, (
-            f"Line {findings[0].line} does not contain train_test_split: {flagged!r}"
-        )
+        assert (
+            "train_test_split" in flagged
+        ), f"Line {findings[0].line} does not contain train_test_split: {flagged!r}"
 
     def test_finding_message_mentions_shuffle(self, rule):
         findings = rule.check(_load("rt001_bad.py"), "rt001_bad.py")

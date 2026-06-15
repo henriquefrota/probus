@@ -43,6 +43,6 @@ def test_production_path_is_flagged():
 def test_test_paths_are_skipped_by_every_rule(path):
     assert is_test_filepath(path)
     for rule in get_all_rules():
-        assert rule.check(_TRIGGERING_SOURCE, path) == [], (
-            f"{rule.rule_id} should skip test path {path!r}"
-        )
+        assert (
+            rule.check(_TRIGGERING_SOURCE, path) == []
+        ), f"{rule.rule_id} should skip test path {path!r}"

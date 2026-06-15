@@ -6,7 +6,7 @@ from typing import ClassVar
 @dataclass
 class Finding:
     rule_id: str
-    severity: str       # "critical" | "high" | "medium" | "low"
+    severity: str  # "critical" | "high" | "medium" | "low"
     message: str
     line: int
     file: str

@@ -40,9 +40,9 @@ class TestCS001BadFixture:
         findings = rule.check(_load("cs001_bad.py"), "cs001_bad.py")
         source_lines = _load("cs001_bad.py").splitlines()
         flagged_line = source_lines[findings[0].line - 1]
-        assert "shift" in flagged_line, (
-            f"Line {findings[0].line} does not contain 'shift': {flagged_line!r}"
-        )
+        assert (
+            "shift" in flagged_line
+        ), f"Line {findings[0].line} does not contain 'shift': {flagged_line!r}"
 
     def test_finding_message_mentions_shift(self, rule):
         findings = rule.check(_load("cs001_bad.py"), "cs001_bad.py")

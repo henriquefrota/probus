@@ -64,28 +64,53 @@ import ast
 from probus.rules._utils import is_test_filepath
 from probus.rules.base import Finding, Rule
 
-_NUMPY_RNG_METHODS: frozenset[str] = frozenset({
-    "randn", "rand", "choice", "randint", "shuffle", "permutation",
-})
+_NUMPY_RNG_METHODS: frozenset[str] = frozenset(
+    {
+        "randn",
+        "rand",
+        "choice",
+        "randint",
+        "shuffle",
+        "permutation",
+    }
+)
 
-_STDLIB_RNG_METHODS: frozenset[str] = frozenset({
-    "choice", "shuffle", "sample", "random",
-})
+_STDLIB_RNG_METHODS: frozenset[str] = frozenset(
+    {
+        "choice",
+        "shuffle",
+        "sample",
+        "random",
+    }
+)
 
-_TORCH_RNG_METHODS: frozenset[str] = frozenset({
-    "randn", "rand", "randint",
-})
+_TORCH_RNG_METHODS: frozenset[str] = frozenset(
+    {
+        "randn",
+        "rand",
+        "randint",
+    }
+)
 
-_SKLEARN_STOCHASTIC: frozenset[str] = frozenset({
-    "train_test_split",
-    "RandomForestRegressor", "RandomForestClassifier",
-    "GradientBoostingRegressor", "GradientBoostingClassifier",
-    "ExtraTreesRegressor", "ExtraTreesClassifier",
-    "BaggingRegressor", "BaggingClassifier",
-    "AdaBoostRegressor", "AdaBoostClassifier",
-    "KMeans", "MiniBatchKMeans",
-    "SGDRegressor", "SGDClassifier",
-})
+_SKLEARN_STOCHASTIC: frozenset[str] = frozenset(
+    {
+        "train_test_split",
+        "RandomForestRegressor",
+        "RandomForestClassifier",
+        "GradientBoostingRegressor",
+        "GradientBoostingClassifier",
+        "ExtraTreesRegressor",
+        "ExtraTreesClassifier",
+        "BaggingRegressor",
+        "BaggingClassifier",
+        "AdaBoostRegressor",
+        "AdaBoostClassifier",
+        "KMeans",
+        "MiniBatchKMeans",
+        "SGDRegressor",
+        "SGDClassifier",
+    }
+)
 
 
 def _is_numpy_rng(node: ast.Call) -> bool:

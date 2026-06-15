@@ -2,10 +2,10 @@ from pathlib import Path
 
 import pytest
 
+from probus.rules.base import Finding
 from probus.rules.conceptual_soundness.cs003_scaler_fit_full_dataset import (
     CS003ScalerFitFullDataset,
 )
-from probus.rules.base import Finding
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -22,9 +22,9 @@ def _load(name: str) -> str:
 class TestCS003BadFixture:
     def test_flags_at_least_one_finding(self, rule):
         findings = rule.check(_load("cs003_bad.py"), "cs003_bad.py")
-        assert len(findings) >= 1, (
-            f"Expected CS003 to flag the bad fixture; got 0 findings"
-        )
+        assert (
+            len(findings) >= 1
+        ), "Expected CS003 to flag the bad fixture; got 0 findings"
 
     def test_finding_rule_id(self, rule):
         findings = rule.check(_load("cs003_bad.py"), "cs003_bad.py")
@@ -44,9 +44,9 @@ class TestCS003BadFixture:
         findings = rule.check(_load("cs003_bad.py"), "cs003_bad.py")
         source_lines = _load("cs003_bad.py").splitlines()
         flagged_line = source_lines[findings[0].line - 1]
-        assert "fit" in flagged_line, (
-            f"Line {findings[0].line} does not contain a fit call: {flagged_line!r}"
-        )
+        assert (
+            "fit" in flagged_line
+        ), f"Line {findings[0].line} does not contain a fit call: {flagged_line!r}"
 
     def test_finding_message_is_informative(self, rule):
         findings = rule.check(_load("cs003_bad.py"), "cs003_bad.py")
@@ -73,9 +73,7 @@ class TestCS003GoodFixture:
         findings = rule.check(_load("cs003_good.py"), "cs003_good.py")
         assert len(findings) == 0, (
             f"Expected zero CS003 findings on the good fixture, got {len(findings)}:\n"
-            + "\n".join(
-                f"  line {f.line}: {f.message}" for f in findings
-            )
+            + "\n".join(f"  line {f.line}: {f.message}" for f in findings)
         )
 
 

@@ -102,7 +102,11 @@ def _is_shift1(node: ast.AST) -> bool:
         if isinstance(node.args[0], ast.Constant) and node.args[0].value == 1:
             return True
     for kw in node.keywords:
-        if kw.arg == "periods" and isinstance(kw.value, ast.Constant) and kw.value.value == 1:
+        if (
+            kw.arg == "periods"
+            and isinstance(kw.value, ast.Constant)
+            and kw.value.value == 1
+        ):
             return True
     return False
 

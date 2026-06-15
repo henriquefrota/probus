@@ -59,15 +59,17 @@ from typing import Optional
 from probus.rules._utils import is_test_filepath
 from probus.rules.base import Finding, Rule
 
-_TEMPORAL_SIGNALS: frozenset[str] = frozenset({
-    "date_range",
-    "DatetimeIndex",
-    "to_datetime",
-    "pct_change",
-    "rolling",
-    "resample",
-    "TimeSeriesSplit",
-})
+_TEMPORAL_SIGNALS: frozenset[str] = frozenset(
+    {
+        "date_range",
+        "DatetimeIndex",
+        "to_datetime",
+        "pct_change",
+        "rolling",
+        "resample",
+        "TimeSeriesSplit",
+    }
+)
 
 
 def _find_train_test_split_calls(tree: ast.AST) -> list[ast.Call]:

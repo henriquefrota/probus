@@ -62,14 +62,30 @@ from probus.rules.base import Finding, Rule
 
 # Variable names that indicate the assignment is a supervised learning label,
 # not a signal. shift(-N) inside these assignments is intentional.
-_LABEL_NAMES: frozenset[str] = frozenset({
-    "target", "y", "label", "labels",
-    "fwd_return", "fwd_ret", "fwd_returns",
-    "forward_return", "forward_returns",
-    "next_return", "future_return", "future_returns",
-})
+_LABEL_NAMES: frozenset[str] = frozenset(
+    {
+        "target",
+        "y",
+        "label",
+        "labels",
+        "fwd_return",
+        "fwd_ret",
+        "fwd_returns",
+        "forward_return",
+        "forward_returns",
+        "next_return",
+        "future_return",
+        "future_returns",
+    }
+)
 _LABEL_PREFIXES: tuple[str, ...] = (
-    "target_", "y_", "label_", "fwd_", "forward_", "next_", "future_",
+    "target_",
+    "y_",
+    "label_",
+    "fwd_",
+    "forward_",
+    "next_",
+    "future_",
 )
 _LABEL_SUFFIXES: tuple[str, ...] = ("_target", "_label", "_fwd", "_forward")
 

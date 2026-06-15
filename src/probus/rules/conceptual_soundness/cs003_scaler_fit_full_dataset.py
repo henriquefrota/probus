@@ -66,37 +66,49 @@ from probus.rules.base import Finding, Rule
 
 # Sklearn-compatible transformers that must only be fitted on training data
 # in a supervised learning or backtesting workflow.
-_KNOWN_SCALERS: frozenset[str] = frozenset({
-    "StandardScaler",
-    "MinMaxScaler",
-    "RobustScaler",
-    "MaxAbsScaler",
-    "Normalizer",
-    "PowerTransformer",
-    "QuantileTransformer",
-    "PCA",
-})
+_KNOWN_SCALERS: frozenset[str] = frozenset(
+    {
+        "StandardScaler",
+        "MinMaxScaler",
+        "RobustScaler",
+        "MaxAbsScaler",
+        "Normalizer",
+        "PowerTransformer",
+        "QuantileTransformer",
+        "PCA",
+    }
+)
 
 # Methods that both fit parameters to data and (optionally) transform it.
 # Calling these before splitting leaks test-set statistics.
 _FIT_METHODS: frozenset[str] = frozenset({"fit", "fit_transform"})
 
 # Sklearn utilities that perform or imply a train/test split.
-_SPLIT_FUNCTION_NAMES: frozenset[str] = frozenset({
-    "train_test_split",
-    "TimeSeriesSplit",
-})
+_SPLIT_FUNCTION_NAMES: frozenset[str] = frozenset(
+    {
+        "train_test_split",
+        "TimeSeriesSplit",
+    }
+)
 
 # Variable names that conventionally hold a training or test partition.
 # Presence of any of these in an assignment is treated as a split signal.
-_SPLIT_VARIABLE_NAMES: frozenset[str] = frozenset({
-    "X_train", "X_test",
-    "y_train", "y_test",
-    "train_data", "test_data",
-    "train_idx", "test_idx",
-    "train_X", "test_X",
-    "train_y", "test_y",
-})
+_SPLIT_VARIABLE_NAMES: frozenset[str] = frozenset(
+    {
+        "X_train",
+        "X_test",
+        "y_train",
+        "y_test",
+        "train_data",
+        "test_data",
+        "train_idx",
+        "test_idx",
+        "train_X",
+        "test_X",
+        "train_y",
+        "test_y",
+    }
+)
 
 
 def _callable_name(node: ast.Call) -> Optional[str]:
@@ -129,9 +141,8 @@ def _collect_scaler_vars(tree: ast.AST) -> dict[str, int]:
             and node.value is not None
             and isinstance(node.value, ast.Call)
         ):
-            if (
-                _callable_name(node.value) in _KNOWN_SCALERS
-                and isinstance(node.target, ast.Name)
+            if _callable_name(node.value) in _KNOWN_SCALERS and isinstance(
+                node.target, ast.Name
             ):
                 result[node.target.id] = node.lineno
     return result

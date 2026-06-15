@@ -21,7 +21,7 @@ features = pd.DataFrame(
     {
         "mom_20": prices.pct_change(20).reindex(returns.index),
         "vol_20": returns.rolling(20).std(),
-        "rsi":    returns.rolling(14).mean() / (returns.rolling(14).std() + 1e-9),
+        "rsi": returns.rolling(14).mean() / (returns.rolling(14).std() + 1e-9),
     },
     index=returns.index,
 ).dropna()

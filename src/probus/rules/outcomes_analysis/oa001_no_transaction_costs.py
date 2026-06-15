@@ -65,28 +65,32 @@ import ast
 from probus.rules._utils import is_test_filepath
 from probus.rules.base import Finding, Rule
 
-_STRATEGY_VAR_NAMES: frozenset[str] = frozenset({
-    "strategy_returns",
-    "portfolio_returns",
-    "pnl",
-    "daily_pnl",
-    "strategy_pnl",
-    "port_returns",
-    "strat_returns",
-    "net_returns",
-    "gross_returns",
-})
+_STRATEGY_VAR_NAMES: frozenset[str] = frozenset(
+    {
+        "strategy_returns",
+        "portfolio_returns",
+        "pnl",
+        "daily_pnl",
+        "strategy_pnl",
+        "port_returns",
+        "strat_returns",
+        "net_returns",
+        "gross_returns",
+    }
+)
 
-_COST_TERMS: frozenset[str] = frozenset({
-    "commission",
-    "cost",
-    "fee",
-    "spread",
-    "slippage",
-    "bps",
-    "transaction",
-    "rebate",
-})
+_COST_TERMS: frozenset[str] = frozenset(
+    {
+        "commission",
+        "cost",
+        "fee",
+        "spread",
+        "slippage",
+        "bps",
+        "transaction",
+        "rebate",
+    }
+)
 
 
 def _has_strategy_returns(tree: ast.AST) -> bool:

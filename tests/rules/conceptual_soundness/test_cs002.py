@@ -40,13 +40,16 @@ class TestCS002BadFixture:
         findings = rule.check(_load("cs002_bad.py"), "cs002_bad.py")
         source_lines = _load("cs002_bad.py").splitlines()
         flagged_line = source_lines[findings[0].line - 1]
-        assert "*" in flagged_line, (
-            f"Line {findings[0].line} does not contain '*': {flagged_line!r}"
-        )
+        assert (
+            "*" in flagged_line
+        ), f"Line {findings[0].line} does not contain '*': {flagged_line!r}"
 
     def test_finding_message_mentions_shift(self, rule):
         findings = rule.check(_load("cs002_bad.py"), "cs002_bad.py")
-        assert "shift" in findings[0].message.lower() or "bar" in findings[0].message.lower()
+        assert (
+            "shift" in findings[0].message.lower()
+            or "bar" in findings[0].message.lower()
+        )
 
     def test_finding_has_recommendation(self, rule):
         findings = rule.check(_load("cs002_bad.py"), "cs002_bad.py")
@@ -79,16 +82,12 @@ class TestCS002EdgeCases:
         assert rule.check("def (bad syntax", "x.py") == []
 
     def test_no_multiplication_produces_no_findings(self, rule):
-        source = (
-            "returns = prices.pct_change()\n"
-            "signal = (ma > mb).astype(int)\n"
-        )
+        source = "returns = prices.pct_change()\n" "signal = (ma > mb).astype(int)\n"
         assert rule.check(source, "x.py") == []
 
     def test_shift1_on_signal_not_flagged(self, rule):
         source = (
-            "returns = prices.pct_change()\n"
-            "strategy = signal.shift(1) * returns\n"
+            "returns = prices.pct_change()\n" "strategy = signal.shift(1) * returns\n"
         )
         assert rule.check(source, "x.py") == []
 
@@ -101,9 +100,7 @@ class TestCS002EdgeCases:
 
     def test_both_sides_return_like_not_flagged(self, rule):
         # Excess return vs benchmark — both sides are returns.
-        source = (
-            "active_return = portfolio_returns * benchmark_returns\n"
-        )
+        source = "active_return = portfolio_returns * benchmark_returns\n"
         assert rule.check(source, "x.py") == []
 
     def test_inline_pct_change_flagged(self, rule):
@@ -119,10 +116,7 @@ class TestCS002EdgeCases:
 
     def test_returns_on_left_flagged(self, rule):
         # Return on the left, unshifted signal on the right.
-        source = (
-            "returns = prices.pct_change()\n"
-            "strategy = returns * signal\n"
-        )
+        source = "returns = prices.pct_change()\n" "strategy = returns * signal\n"
         findings = rule.check(source, "x.py")
         assert len(findings) >= 1
         assert findings[0].rule_id == "CS002"

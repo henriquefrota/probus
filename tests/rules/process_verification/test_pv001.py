@@ -40,9 +40,9 @@ class TestPV001BadFixture:
         findings = rule.check(_load("pv001_bad.py"), "pv001_bad.py")
         source_lines = _load("pv001_bad.py").splitlines()
         flagged = source_lines[findings[0].line - 1]
-        assert any(m in flagged for m in ("randn", "rand(", "randint", "choice", "shuffle")), (
-            f"Line {findings[0].line} does not contain a recognizable RNG call: {flagged!r}"
-        )
+        assert any(
+            m in flagged for m in ("randn", "rand(", "randint", "choice", "shuffle")
+        ), f"Line {findings[0].line} does not contain a recognizable RNG call: {flagged!r}"
 
     def test_finding_message_mentions_seed(self, rule):
         findings = rule.check(_load("pv001_bad.py"), "pv001_bad.py")
@@ -84,9 +84,7 @@ class TestPV001EdgeCases:
 
     def test_numpy_seed_suppresses_finding(self, rule):
         source = (
-            "import numpy as np\n"
-            "np.random.seed(42)\n"
-            "x = np.random.randn(100)\n"
+            "import numpy as np\n" "np.random.seed(42)\n" "x = np.random.randn(100)\n"
         )
         assert rule.check(source, "seeded.py") == []
 
@@ -125,10 +123,7 @@ class TestPV001EdgeCases:
         assert len(findings) >= 1
 
     def test_stdlib_random_without_seed_flagged(self, rule):
-        source = (
-            "import random\n"
-            "choices = random.choice([1, 2, 3])\n"
-        )
+        source = "import random\n" "choices = random.choice([1, 2, 3])\n"
         findings = rule.check(source, "stdlib_rng.py")
         assert len(findings) >= 1
         assert findings[0].rule_id == "PV001"
